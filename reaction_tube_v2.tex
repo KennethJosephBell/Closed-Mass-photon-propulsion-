@@ -1,0 +1,817 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath, amssymb}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{hyperref}
+\usepackage{booktabs}
+
+\title{Reaction Tube Propulsion System\\
+       \large Corrected Mathematical Description (v2)}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{Design Rationale}
+
+The reaction tube is a \textbf{zero-reaction-mass} propulsion concept. All solid
+and fluid mass remains permanently aboard the spacecraft; the only substance that
+exits the system is radiation (photons). This trades thrust-to-power ratio for
+effectively infinite specific impulse, making the concept suited to extremely
+long-duration missions where propellant exhaustion would otherwise be the binding
+constraint.
+
+The sole source of external thrust is collimated photon emission. The
+projectile and fluid subsystems are internal energy-conversion machinery whose
+purpose is to excite the fluid medium in a manner that maximises the fraction of
+fusion energy converted into directed, collimated radiation.
+
+\section*{1. System Boundary}
+
+\begin{itemize}
+  \item \textbf{Mass boundary:} Closed. Projectile mass $m_p$, fluid mass $m_f$, and
+        condensed fluid all remain inside the spacecraft at all times.
+  \item \textbf{Energy boundary:} Open. Fusion power $P_{\mathrm{fusion}}$ enters;
+        directed photon energy $E_{\mathrm{rad}}$ and waste heat exit.
+  \item \textbf{Consequence:} Any internal momentum exchange (projectile
+        acceleration, fluid collision, recondensation recoil) is an internal force
+        and produces zero net thrust by Newton's third law. Only the photon
+        momentum flux couples to the spacecraft's external motion.
+\end{itemize}
+
+\section*{2. Energy Accounting}
+
+\subsection*{2.1 Energy inputs}
+
+Total power available per second:
+\[
+  P_{\mathrm{in}} = P_{\mathrm{fusion}} + R_p \tfrac{1}{2} m_p v_p^2
+\]
+where $R_p$ is the projectile fire rate and $v_p$ is projectile velocity.
+Note that the kinetic energy of the projectile loop is itself ultimately sourced
+from $P_{\mathrm{fusion}}$; it is listed separately to track the conversion pathway.
+
+\subsection*{2.2 Energy losses}
+
+Two loss channels reduce the energy available for photon emission.
+
+\paragraph{Phase-change absorption.}
+The fluid absorbs energy as it transitions from liquid to gas:
+\[
+  P_{\mathrm{phase}} = \dot{m}_{\mathrm{phase}}\,\Delta H
+\]
+where $\Delta H$ is the specific enthalpy of vaporisation (J~kg$^{-1}$) and
+$\dot{m}_{\mathrm{phase}}$ is the mass flow rate through the phase transition.
+
+\paragraph{Recondensation.}
+When gas recondenses to liquid, the latent heat $\Delta H$ is \emph{released},
+not consumed. A fraction $\eta_{\mathrm{rec}} \in [0,1]$ of this released energy
+is recoverable (returned to $P_{\mathrm{in}}$ via heat exchange or
+thermoelectric conversion); the remainder $1 - \eta_{\mathrm{rec}}$ is lost as
+waste heat:
+\[
+  P_{\mathrm{rec,out}} = \eta_{\mathrm{rec}}\,\dot{m}_{\mathrm{phase}}\,\Delta H
+  \qquad
+  P_{\mathrm{rec,loss}} = (1 - \eta_{\mathrm{rec}})\,\dot{m}_{\mathrm{phase}}\,\Delta H
+\]
+In steady state, the net phase-change energy cost is therefore:
+\[
+  P_{\mathrm{phase,net}} = P_{\mathrm{phase}} - P_{\mathrm{rec,out}}
+  = (1 - \eta_{\mathrm{rec}})\,\dot{m}_{\mathrm{phase}}\,\Delta H
+\]
+The original formulation treated condensation as an additional loss $E_{\mathrm{cond}}$;
+this is corrected here. The condensation step releases the same latent heat that
+vaporisation absorbed; it is a recovery opportunity, not a second loss.
+
+\subsection*{2.3 Energy available for photon thrust}
+\[
+  \boxed{
+  E_{\mathrm{rad}} = C_{\mathrm{rad}}\!\left(
+    P_{\mathrm{in}}
+    + \eta_{\mathrm{rec}}\,\dot{m}_{\mathrm{phase}}\,\Delta H
+    - \dot{m}_{\mathrm{phase}}\,\Delta H
+  \right)
+  = C_{\mathrm{rad}}\!\left(
+    P_{\mathrm{in}}
+    - (1-\eta_{\mathrm{rec}})\,\dot{m}_{\mathrm{phase}}\,\Delta H
+  \right)
+  }
+\]
+where $C_{\mathrm{rad}} \in [0,1]$ is the photon collimation efficiency — the
+fraction of available energy that is emitted as directed, thrust-producing radiation
+rather than isotropic waste heat.
+
+\section*{3. Thrust and Dynamics}
+
+\subsection*{3.1 Net thrust}
+
+Since all mass is conserved internally, the \emph{only} thrust term is the photon
+momentum flux:
+\[
+  \boxed{F_{\mathrm{net}} = \frac{E_{\mathrm{rad}}}{c}
+  = \frac{C_{\mathrm{rad}}}{c}\!\left(
+    P_{\mathrm{in}} - (1-\eta_{\mathrm{rec}})\,\dot{m}_{\mathrm{phase}}\,\Delta H
+  \right)}
+\]
+The mechanical projectile term $F_{\mathrm{proj}} = \eta_{\mathrm{proj}} R_p m_p v_p$
+that appeared in the original formulation is \textbf{removed}. It represented an
+internal force pair that cancels identically.
+
+\subsection*{3.2 Spacecraft acceleration}
+
+Non-relativistic regime:
+\[
+  a_{\mathrm{net}} = \frac{F_{\mathrm{net}}}{M}
+  \qquad
+  v_{\mathrm{ship}}(t) = \int_0^t a_{\mathrm{net}}(t')\,dt'
+\]
+
+Relativistic regime (applicable when $v_{\mathrm{ship}}$ is not negligible relative
+to $c$):
+\[
+  F_{\mathrm{net}} = \frac{d}{dt}\!\left(\gamma M v_{\mathrm{ship}}\right),
+  \qquad
+  \gamma = \frac{1}{\sqrt{1-(v_{\mathrm{ship}}/c)^2}}
+\]
+
+\subsection*{3.3 Thrust-to-power ratio}
+
+A photon rocket has a fundamental thrust-to-power ceiling:
+\[
+  \frac{F}{P} = \frac{1}{c} \approx 3.33 \times 10^{-9}\ \mathrm{N\,W^{-1}}
+\]
+This is the highest specific impulse achievable but the \emph{lowest} thrust per
+watt of any propulsion concept. The reaction tube system achieves a fraction of
+this ceiling:
+\[
+  \frac{F_{\mathrm{net}}}{P_{\mathrm{in}}} =
+  \frac{C_{\mathrm{rad}}}{c}
+  \left(1 - \frac{(1-\eta_{\mathrm{rec}})\,\dot{m}_{\mathrm{phase}}\,\Delta H}{P_{\mathrm{in}}}\right)
+\]
+Maximising this ratio requires simultaneously maximising $C_{\mathrm{rad}}$,
+maximising $\eta_{\mathrm{rec}}$, and minimising the phase-change losses relative to
+$P_{\mathrm{in}}$.
+
+\section*{4. Dimensionless Performance Parameters}
+
+\subsection*{4.1 Energy loss fraction}
+\[
+  \Phi = \frac{(1-\eta_{\mathrm{rec}})\,\dot{m}_{\mathrm{phase}}\,\Delta H}{P_{\mathrm{in}}}
+  \in [0,1]
+\]
+\begin{itemize}
+  \item $\Phi \to 0$: phase-change losses negligible; system approaches ideal
+        photon rocket efficiency.
+  \item $\Phi \to 1$: nearly all input energy is lost to phase cycling;
+        thrust approaches zero.
+\end{itemize}
+
+\subsection*{4.2 Thrust regime number}
+\[
+  \Gamma = \frac{E_{\mathrm{rad}}}{(1-\eta_{\mathrm{rec}})\,\dot{m}_{\mathrm{phase}}\,\Delta H}
+  = \frac{C_{\mathrm{rad}}(1-\Phi)}{\Phi}
+\]
+\begin{itemize}
+  \item $\Gamma \gg 1$: photon thrust dominates over losses.
+  \item $\Gamma \sim 1$: transition regime; losses and useful output are comparable.
+  \item $\Gamma \ll 1$: loss-dominated; system is not viable.
+\end{itemize}
+
+\section*{5. Mass and State Evolution}
+
+\subsection*{5.1 Fluid mass}
+In steady-state operation (condensation returns all vaporised fluid):
+\[
+  \frac{dm_f}{dt} = -\dot{m}_{\mathrm{phase}} + \frac{m_{\mathrm{gas}}}{\tau_{\mathrm{cond}}} = 0
+  \quad\Longrightarrow\quad
+  \dot{m}_{\mathrm{phase}} = \frac{m_{\mathrm{gas}}}{\tau_{\mathrm{cond}}}
+\]
+where $\tau_{\mathrm{cond}}$ is the mean condensation timescale.
+
+\subsection*{5.2 Projectile dynamics}
+Energy transfer to the fluid per collision reduces projectile velocity:
+\[
+  \frac{dv_p}{dt} = -\frac{\Delta E_{\mathrm{transfer}}}{m_p\,v_p}
+\]
+The projectile must be re-accelerated by $P_{\mathrm{fusion}}$ to sustain continuous
+operation. The re-acceleration power is part of the $R_p \tfrac{1}{2} m_p v_p^2$
+term in $P_{\mathrm{in}}$.
+
+\section*{6. Summary of Corrections from v1}
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Quantity} & \textbf{v1 (original)} & \textbf{v2 (corrected)} \\
+\midrule
+Thrust & $F_{\mathrm{proj}} + F_{\mathrm{photon}}$ & $F_{\mathrm{photon}}$ only \\
+Condensation & Additional loss $E_{\mathrm{cond}}$ & Partial recovery $\eta_{\mathrm{rec}}\,\Delta H$ \\
+Net phase loss & $\dot{m}(\Delta H + E_{\mathrm{cond}})$ & $(1-\eta_{\mathrm{rec}})\,\dot{m}\,\Delta H$ \\
+$E_{\mathrm{rad}}$ & $C_{\mathrm{rad}}(P_{\mathrm{in}}-P_{\mathrm{phase}}-P_{\mathrm{cond}})$ & $C_{\mathrm{rad}}(P_{\mathrm{in}}-(1-\eta_{\mathrm{rec}})\dot{m}\Delta H)$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section*{7. Open Questions}
+
+\begin{enumerate}
+  \item \textbf{Recondensation recovery:} What physical mechanism achieves
+        $\eta_{\mathrm{rec}} > 0$? Candidates include heat exchangers, thermoelectric
+        converters, and thermoacoustic generators. The upper bound on
+        $\eta_{\mathrm{rec}}$ is set by the Carnot efficiency of the hot-cold
+        temperature differential across the condenser.
+  \item \textbf{Collimation efficiency:} What value of $C_{\mathrm{rad}}$ is
+        physically achievable? This depends on the emission spectrum of the excited
+        fluid and the geometry of the collimation optics.
+  \item \textbf{Projectile loop efficiency:} Is kinetic impact a more effective way
+        to excite directed photon emission from the fluid than direct laser or
+        microwave coupling? This determines whether the projectile subsystem adds
+        net value.
+  \item \textbf{Fluid selection:} Which working fluid maximises the ratio
+        $E_{\mathrm{rad}} / (P_{\mathrm{phase,net}})$? Candidates should have a
+        large photon emission cross-section, a low specific enthalpy of vaporisation,
+        and a phase-change temperature compatible with the condenser design.
+\end{enumerate}
+
+
+\section*{8. Carnot-Bounded Recovery Analysis and Fluid Selection}
+
+\subsection*{8.1 Thermodynamic framework}
+
+The condenser operates between a hot reservoir at temperature $T_H$ (the
+condensing gas) and a cold reservoir at temperature $T_C$ (the spacecraft
+radiator, ultimately rejecting heat to deep space). Any real heat-recovery
+device obeys the Carnot bound:
+\[
+  \eta_{\mathrm{rec}} \leq \eta_{\mathrm{Carnot}} = 1 - \frac{T_C}{T_H}
+\]
+The condensation temperature $T_H$ is a property of the chosen working fluid
+(it equals the boiling point at the operating pressure). $T_C$ is a spacecraft
+design parameter; a well-engineered deep-space radiator can reach
+$T_C \approx 50$--$200$~K.
+
+For a practical recovery device with second-law efficiency $\epsilon \in [0,1]$
+relative to the Carnot limit, the actual recovery fraction is:
+\[
+  \eta_{\mathrm{rec}} = \epsilon \left(1 - \frac{T_C}{T_H}\right)
+\]
+Thermoelectric converters achieve $\epsilon \approx 0.10$--$0.20$; thermoacoustic
+engines $\epsilon \approx 0.25$--$0.40$; recuperative heat exchangers (which
+return energy as heat rather than work) can reach $\epsilon \approx 0.70$--$0.90$
+but only reduce the \emph{required} vaporisation power, not directly increase
+electrical output.
+
+\subsection*{8.2 Net recoverable power}
+
+The condensation step releases latent heat at rate:
+\[
+  \dot{Q}_{\mathrm{cond}} = \dot{m}_{\mathrm{phase}}\,\Delta H(T_H)
+\]
+The power actually recovered and returned to $P_{\mathrm{in}}$ is:
+\[
+  P_{\mathrm{rec}} = \eta_{\mathrm{rec}}\,\dot{m}_{\mathrm{phase}}\,\Delta H(T_H)
+  = \epsilon\!\left(1 - \frac{T_C}{T_H}\right)\dot{m}_{\mathrm{phase}}\,\Delta H(T_H)
+\]
+The irreducible waste power radiated to space is:
+\[
+  P_{\mathrm{waste}} = (1 - \eta_{\mathrm{rec}})\,\dot{m}_{\mathrm{phase}}\,\Delta H(T_H)
+  + \frac{T_C}{T_H}\,\eta_{\mathrm{rec}}\,\dot{m}_{\mathrm{phase}}\,\Delta H(T_H)
+\]
+where the second term is the unavoidable heat rejected to the cold reservoir
+even in an ideal recovery cycle.
+
+\subsection*{8.3 Updated thrust equation with explicit Carnot terms}
+
+Substituting $\eta_{\mathrm{rec}} = \epsilon(1 - T_C/T_H)$ into the thrust
+equation from Section~3.1:
+\[
+  \boxed{
+  F_{\mathrm{net}} = \frac{C_{\mathrm{rad}}}{c}
+  \left[
+    P_{\mathrm{in}}
+    - \left(1 - \epsilon\!\left(1 - \frac{T_C}{T_H}\right)\right)
+      \dot{m}_{\mathrm{phase}}\,\Delta H(T_H)
+  \right]
+  }
+\]
+This makes the dependence on fluid properties and hardware quality explicit.
+Three handles are available to the designer: the collimation efficiency
+$C_{\mathrm{rad}}$, the device efficiency $\epsilon$, and the fluid selection
+(which sets $T_H$ and $\Delta H$).
+
+\subsection*{8.4 Fluid selection as an optimisation problem}
+
+Define the \textbf{specific thrust figure of merit} for the fluid as the
+net radiated energy per unit of phase-change mass flow, normalised by
+$P_{\mathrm{in}}$:
+\[
+  \mathcal{F}(T_H) =
+  1 -
+  \frac{\left[1 - \epsilon\!\left(1 - T_C/T_H\right)\right]\Delta H(T_H)}
+       {P_{\mathrm{in}}/\dot{m}_{\mathrm{phase}}}
+\]
+Maximising $\mathcal{F}$ requires maximising the effective loss reduction
+$\eta_{\mathrm{rec}}\,\Delta H(T_H)$ while minimising $\Delta H(T_H)$ itself.
+These two objectives are in tension: high $\Delta H$ means more energy to
+recover, but also more energy at risk of being wasted if $\eta_{\mathrm{rec}}$
+is limited.
+
+The optimum exists at the fluid where the marginal gain from recovery exactly
+offsets the marginal cost of vaporisation. Setting
+$\partial \mathcal{F}/\partial T_H = 0$, with $\Delta H$ and $T_H$ linked
+through the Clausius--Clapeyron relation
+$d(\ln P_{\mathrm{sat}})/d(1/T) = -\Delta H / R$, the optimal boiling
+point satisfies:
+\[
+  \frac{d}{dT_H}\!\left[\eta_{\mathrm{rec}}(T_H)\,\Delta H(T_H)\right]
+  = \frac{d}{dT_H}\!\left[\Delta H(T_H)\right]
+\]
+which reduces to:
+\[
+  \Delta H(T_H)\,\frac{d\eta_{\mathrm{rec}}}{dT_H} = 0
+\]
+Since $\Delta H > 0$, the optimum occurs where $d\eta_{\mathrm{rec}}/dT_H = 0$,
+i.e.\ where the Carnot efficiency is locally insensitive to $T_H$. Given that
+$\eta_{\mathrm{Carnot}} = 1 - T_C/T_H$ is monotonically increasing in $T_H$,
+this formally pushes the optimum toward the \emph{highest achievable} $T_H$
+--- the fluid that remains condensable but has the highest boiling point
+consistent with the collimation optics and structural materials.
+
+\subsection*{8.5 Candidate fluid comparison}
+
+Table~\ref{tab:fluids} lists candidate working fluids ranked by the
+key figure of merit $\Delta H / T_H$, which is proportional to the entropy
+of vaporisation (Trouton's rule predicts this is roughly constant at
+$\approx 88$~J~mol$^{-1}$~K$^{-1}$ for many liquids, but metals and
+ionic materials deviate strongly).
+
+\begin{table}[h]
+\centering
+\caption{Candidate working fluids. $T_H$ = normal boiling point,
+$\Delta H$ = specific enthalpy of vaporisation.
+$\eta_{\mathrm{Carnot}}$ computed at $T_C = 100$~K.
+\label{tab:fluids}}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Fluid} & $T_H$ (K) & $\Delta H$ (kJ~kg$^{-1}$) & $\eta_{\mathrm{Carnot}}$ & Notes \\
+\midrule
+Water          & 373  & 2260 & 0.73 & High $\Delta H$; poor at high $T$ \\
+Mercury        & 630  & 295  & 0.84 & Low $\Delta H$; moderately high $T_H$ \\
+Lithium        & 1615 & 19\,600 & 0.94 & Very high $\Delta H$ and $T_H$ \\
+Sodium         & 1156 & 4370 & 0.91 & Good balance; well studied \\
+Cesium         & 944  & 537  & 0.89 & Low $\Delta H$; high $T_H$ \\
+Tin            & 2875 & 2490 & 0.97 & Extreme $T_H$; materials challenge \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent
+The analysis favours fluids with \emph{high $T_H$} (maximising $\eta_{\mathrm{Carnot}}$)
+and \emph{low $\Delta H$} (minimising gross losses). Cesium and mercury stand out
+on both counts among accessible materials. Liquid metals also have the advantage of
+high thermal conductivity, which improves heat exchanger effectiveness and raises
+the practical $\epsilon$. Lithium has the highest Carnot ceiling but its enormous
+$\Delta H$ means any recovery shortfall is severely penalised.
+
+\subsection*{8.6 Coupled optimisation summary}
+
+The full system optimisation is a four-variable problem:
+\[
+  \max_{C_{\mathrm{rad}},\,\epsilon,\,T_H,\,\dot{m}_{\mathrm{phase}}}
+  \quad
+  F_{\mathrm{net}} = \frac{C_{\mathrm{rad}}}{c}
+  \left[P_{\mathrm{in}} -
+  \left(1 - \epsilon\!\left(1-\frac{T_C}{T_H}\right)\right)
+  \dot{m}_{\mathrm{phase}}\,\Delta H(T_H)\right]
+\]
+subject to:
+\begin{align}
+  \dot{m}_{\mathrm{phase}}\,\Delta H(T_H) &\leq P_{\mathrm{in}}
+    & &\text{(energy budget)} \notag \\
+  \epsilon &\leq \eta_{\mathrm{Carnot}}(T_H,T_C)
+    & &\text{(second law)} \notag \\
+  T_H &\leq T_{\mathrm{material}}
+    & &\text{(structural/optical limits)} \notag \\
+  C_{\mathrm{rad}} &\in [0,1]
+    & &\text{(collimation bound)} \notag
+\end{align}
+The binding constraints in practice are likely to be $T_{\mathrm{material}}$
+(the temperature rating of the collimation optics and condenser walls) and
+$\epsilon$ (the second-law efficiency of the recovery device). These set a
+practical ceiling on $\eta_{\mathrm{rec}}$ that is substantially below the
+Carnot limit, making fluid selection and $C_{\mathrm{rad}}$ the primary
+engineering levers.
+
+
+\section*{9. Photon Collimation Efficiency: The Key Constraining Factor}
+
+\subsection*{9.1 \'{E}tendue conservation — the fundamental passive limit}
+
+The single most important constraint on $C_{\mathrm{rad}}$ is not an engineering
+difficulty but a fundamental theorem of optics, equivalent to Liouville's theorem
+in statistical mechanics: \textbf{no passive optical system can increase the
+brightness (specific intensity) of a source.}
+
+The \emph{\'{e}tendue} (optical throughput) of any beam is defined as:
+\[
+  \mathcal{E} = n^2 A\,\Omega
+\]
+where $n$ is the refractive index, $A$ is the cross-sectional area of the beam,
+and $\Omega$ is the solid angle it subtends. For propagation in vacuum ($n=1$),
+$\mathcal{E}$ is conserved through any sequence of lenses, mirrors, or apertures.
+
+A hot fluid source of radius $r_s$ emitting thermally radiates into a hemisphere
+($\Omega_{\mathrm{source}} = 2\pi$~sr). A parabolic mirror of focal length $f$
+and aperture radius $R$ focuses the source and redirects emission into a beam.
+By \'{e}tendue conservation, the output beam's divergence half-angle satisfies:
+\[
+  \theta_{\mathrm{div}} \geq \frac{r_s}{f}
+\]
+This is not a limit of imperfect optics — it holds for an ideal, aberration-free
+parabolic mirror. The source's finite spatial extent is irreducible: each
+off-axis point on the source produces a slightly different beam direction, and
+these contributions cannot be separated by any passive element.
+
+\subsection*{9.2 Decomposition of $C_{\mathrm{rad}}$}
+
+The overall collimation efficiency decomposes into three independent factors:
+\[
+  C_{\mathrm{rad}} = \eta_{\mathrm{coll}} \cdot \eta_{\mathrm{col}} \cdot \eta_{\mathrm{spec}}
+\]
+
+\paragraph{Geometric collection efficiency $\eta_{\mathrm{coll}}$.}
+The fraction of total emitted power intercepted by the collimating optic.
+A mirror subtending solid angle $\Omega_m$ at the source captures at most
+$\Omega_m / 4\pi$ of the total isotropic emission. A hemispherical mirror
+(the physical maximum) gives $\eta_{\mathrm{coll}} \leq 0.5$.
+
+\paragraph{Collimation quality factor $\eta_{\mathrm{col}}$.}
+Not all collected photons contribute thrust equally; only the axial component
+of their momentum counts. For a beam with half-angle divergence $\theta_{\mathrm{div}}$,
+the mean thrust contribution per photon is $\langle \cos\theta \rangle \approx
+1 - \theta_{\mathrm{div}}^2/2$ for small angles. From the \'{e}tendue bound:
+\[
+  \eta_{\mathrm{col}} \approx 1 - \frac{1}{2}\!\left(\frac{r_s}{f}\right)^2
+\]
+For a compact high-temperature source ($r_s \sim 10$~cm) with a mirror of focal
+length $f \sim 1$~m, $\theta_{\mathrm{div}} \approx 0.1$~rad and
+$\eta_{\mathrm{col}} \approx 0.995$. For a spatially extended source
+($r_s \sim 1$~m, $f \sim 5$~m), $\theta_{\mathrm{div}} \approx 0.2$~rad and
+$\eta_{\mathrm{col}} \approx 0.98$. The angular factor is not usually the
+dominant loss term; the collection efficiency is.
+
+\paragraph{Spectral transmission $\eta_{\mathrm{spec}}$.}
+The fraction of emitted radiation that passes through the collimating optic
+without absorption. This depends on the emission spectrum of the fluid and
+the reflectivity/transmissivity of the mirror material across that spectrum.
+At $T_H = 1000$~K the emission peaks at $\lambda_{\max} \approx 2.9~\mu$m
+(mid-infrared), where most metals have high reflectivity ($> 0.95$).
+At $T_H = 3000$~K, $\lambda_{\max} \approx 1~\mu$m (near-infrared), where
+mirror performance is generally good. Spectral losses are manageable with
+the right mirror material; $\eta_{\mathrm{spec}} \approx 0.85$--$0.95$ is
+achievable.
+
+\subsection*{9.3 Practical ceiling for the thermal pathway}
+
+Combining the three factors for the thermal emission case:
+\[
+  C_{\mathrm{rad}}^{\mathrm{thermal}} \leq
+  \underbrace{\eta_{\mathrm{coll}}}_{\leq\,0.50}
+  \cdot
+  \underbrace{\eta_{\mathrm{col}}}_{\approx\,0.98}
+  \cdot
+  \underbrace{\eta_{\mathrm{spec}}}_{\approx\,0.90}
+  \approx 0.44
+\]
+In practice, a hemisphere-subtending mirror is not physically realisable
+alongside a projectile injection system and a fluid recondenser. A realistic
+mirror geometry might subtend $\Omega_m / 4\pi \approx 0.3$--$0.4$, giving:
+\[
+  C_{\mathrm{rad}}^{\mathrm{thermal}} \approx 0.25\text{--}0.38
+\]
+This is not improvable by better optics. It is the fundamental passive limit
+set by the isotropic nature of thermal emission and the geometry of the tube.
+
+\subsection*{9.4 The Wien temperature–wavelength coupling}
+
+The peak emission wavelength follows Wien's displacement law:
+\[
+  \lambda_{\max} = \frac{b}{T_H}, \qquad b = 2.898 \times 10^{-3}\ \mathrm{m\cdot K}
+\]
+Higher $T_H$ shifts emission to shorter wavelengths. This matters for collimation
+in two ways. First, diffraction — the fundamental limit on beam quality —
+scales with $\lambda$: shorter wavelengths allow smaller diffraction-limited
+beam divergence for a given mirror aperture. Second, for very high $T_H$
+($> 5000$~K), the peak shifts into the visible and UV, where mirror reflectivity
+typically degrades and spectral absorption losses increase. The optimal $T_H$
+for the thermal pathway therefore has a soft upper bound around $2000$--$4000$~K,
+set by mirror material limits and spectral performance.
+
+\subsection*{9.5 The stimulated emission pathway}
+
+Stimulated emission — radiation produced by a population-inverted medium —
+is fundamentally different from thermal emission. Photons are emitted coherently,
+in phase with the stimulating radiation field, and in the same direction. The
+output is a phase-locked beam whose divergence is set by diffraction from the
+aperture, not by source extent. The \'{e}tendue limit does not apply because
+stimulated emission is not a passive redirection of thermal radiation; it is
+an amplification process.
+
+For a gain medium of length $L$ and aperture $D$, the diffraction-limited
+divergence is:
+\[
+  \theta_{\mathrm{diff}} = \frac{\lambda}{D}
+\]
+For $D = 0.1$~m and $\lambda = 1~\mu$m, $\theta_{\mathrm{diff}} = 10^{-5}$~rad,
+giving $\eta_{\mathrm{col}} \approx 1 - 5 \times 10^{-11} \approx 1$. Combined
+with $\eta_{\mathrm{coll}} \to 1$ (all amplified photons exit in the beam
+direction) and $\eta_{\mathrm{spec}} \to 1$ (no optic to lose energy through):
+\[
+  C_{\mathrm{rad}}^{\mathrm{stimulated}} \to 1
+\]
+This is not merely better than the thermal case — it is a qualitatively
+different regime. The entire physics of the system changes.
+
+\subsection*{9.6 The critical question: can the projectile create population inversion?}
+
+Whether the reaction tube can access the stimulated emission pathway depends
+entirely on whether projectile kinetic impact can produce population inversion
+in the working fluid. This is not a question with an obvious answer, and it
+represents the most important open physics question in the concept.
+
+Three mechanisms by which kinetic impact might generate population inversion:
+
+\begin{enumerate}
+  \item \textbf{Shock excitation.} A supersonic projectile creates a shock wave
+        in the fluid. Shock-heated gas can produce non-equilibrium excited
+        state populations on timescales shorter than radiative de-excitation.
+        This is the operating principle of gasdynamic lasers and pulsed
+        shock-tube lasers. The condition is that the shock velocity must be
+        sufficient to selectively populate a metastable upper laser level
+        before thermalisation distributes energy across all modes.
+
+  \item \textbf{Collisional excitation selectivity.} If the projectile material
+        and the fluid are chosen such that collisional energy transfer preferentially
+        populates a specific quantum level (as in atomic collision lasers), the
+        impact could produce a transient inversion. This requires careful
+        matching of projectile material, fluid species, and energy levels —
+        essentially the same constraint as designing a chemical laser.
+
+  \item \textbf{Optical pumping via impact luminescence.} The projectile impact
+        generates a burst of radiation (impact flash). If that radiation lies
+        within the absorption band of a laser-active impurity dissolved in the
+        fluid, the flash optically pumps the impurity into an inverted state.
+        This decouples the impact physics from the lasing physics, potentially
+        relaxing the constraints.
+\end{enumerate}
+
+If \emph{none} of these mechanisms operates, the system is confined to the
+thermal emission pathway and $C_{\mathrm{rad}} \leq 0.38$. If any of them
+works, $C_{\mathrm{rad}}$ could approach unity, increasing thrust by a factor
+of 2.5--4$\times$ at the same input power.
+
+\subsection*{9.7 Revised performance bound}
+
+Combining the $C_{\mathrm{rad}}$ analysis with the full thrust equation from
+Section~3.1:
+
+\begin{align}
+  F_{\mathrm{net}}^{\mathrm{thermal}} &\leq
+    \frac{0.38}{c}\!\left[P_{\mathrm{in}}
+    - (1-\eta_{\mathrm{rec}})\,\dot{m}_{\mathrm{phase}}\,\Delta H\right] \\[6pt]
+  F_{\mathrm{net}}^{\mathrm{stimulated}} &\leq
+    \frac{1.00}{c}\!\left[P_{\mathrm{in}}
+    - (1-\eta_{\mathrm{rec}})\,\dot{m}_{\mathrm{phase}}\,\Delta H\right]
+\end{align}
+
+The ratio $F_{\mathrm{net}}^{\mathrm{stimulated}} / F_{\mathrm{net}}^{\mathrm{thermal}}
+\approx 2.6$ represents the maximum gain from solving the population inversion
+problem. Whether this gain is achievable via projectile excitation, or whether
+it requires a separate optical pump, is the central engineering question for
+the reaction tube concept.
+
+\subsection*{9.8 Summary of $C_{\mathrm{rad}}$ bounds}
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Regime} & \textbf{$C_{\mathrm{rad}}$ range} & \textbf{Limiting factor} \\
+\midrule
+Thermal, poor geometry    & $0.05$--$0.15$ & Mirror solid angle \\
+Thermal, good geometry    & $0.25$--$0.38$ & \'{E}tendue (fundamental) \\
+Stimulated, partial       & $0.5$--$0.8$   & Gain saturation, cavity losses \\
+Stimulated, ideal         & $0.9$--$1.0$   & Diffraction only \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+
+\section*{10. Array Scaling Constraints}
+
+\subsection*{10.1 Motivation}
+
+A single reaction tube operating at a fusion power $P_{\mathrm{fusion}}$ of
+practical magnitude (order 1--100\,MW) is physically large. The natural
+engineering response is to parallelise: an array of $N$ identical tubes sharing
+a common power source and recondensation infrastructure, each contributing
+$F_{\mathrm{net}}/N$ of thrust, with the total summing to $F_{\mathrm{net}}$.
+This section shows that parallelisation introduces two new dissipation channels
+that are not addressed by phononic crystal (PnC) walls, and that dominate the
+thermal budget above a critical array size.
+
+\subsection*{10.2 New dissipation channels in an array}
+
+A single tube has one primary loss pathway: radial heat conduction from the
+944\,K cesium fluid through the tube wall to the structural cold sink.
+PnC engineering suppresses the phononic component of this pathway.
+
+In a parallelised array, two additional channels appear.
+
+\paragraph{Channel 1: Inter-tube radiative cross-coupling.}
+Each tube radiates as a greybody at $T_H = 944$\,K. For an isolated tube the
+radiation budget is simple: all emitted power either exits as directed thrust
+(fraction $C_{\mathrm{rad}}$) or is deposited on the cold radiator. In an
+array, each tube also irradiates its neighbours. The power absorbed by tube
+$j$ from tube $i$ per unit length is:
+\begin{equation}
+  \dot{q}_{i \to j} = F_{ij}\,\varepsilon_{\mathrm{outer}}\,\sigma T_H^4 \cdot 2\pi r_o
+  \label{eq:cross}
+\end{equation}
+where $F_{ij}$ is the geometric view factor between tubes $i$ and $j$,
+$\varepsilon_{\mathrm{outer}}$ is the emissivity of the outer tube surface,
+$r_o$ is the outer tube radius, and $\sigma = 5.67\times10^{-8}$\,W\,m$^{-2}$\,K$^{-4}$.
+
+For two parallel cylinders of radius $r_o$ with centre-to-centre separation
+$s$ ($s \geq 2r_o$), the view factor per unit length is:
+\begin{equation}
+  F_{12} = \frac{1}{\pi}\left[
+    \sqrt{\left(\frac{s}{2r_o}\right)^2 - 1}
+    + \arcsin\!\left(\frac{2r_o}{s}\right)
+    - \frac{s}{2r_o}
+  \right]
+  \label{eq:viewfactor}
+\end{equation}
+For a tightly packed array ($s = 2r_o + \delta$ with small gap $\delta$),
+$F_{12} \to 0.5$ — each tube intercepts up to half the lateral radiation from
+its nearest neighbour. Interior tubes in a large array are surrounded on all
+sides; their effective absorbed cross-radiation power per unit length is:
+\begin{equation}
+  \dot{q}_{\mathrm{cross}} \approx \sum_{j \in \mathrm{nbrs}} F_{ij}\,
+  \varepsilon_{\mathrm{outer}}\,\sigma T_H^4 \cdot 2\pi r_o
+\end{equation}
+For a hexagonally packed array with six nearest neighbours and $F \approx 0.3$,
+an interior tube absorbs approximately $0.3 \times 6 = 1.8$ times its own
+lateral thermal emission from its neighbours — substantially increasing the
+effective thermal load on the fluid. PnC walls are phononic filters and are
+optically transparent; they have no effect on this pathway.
+
+\paragraph{Channel 2: Electronic thermal conductivity scaling.}
+As established in the PnC analysis, heat transport in liquid cesium is dominated
+by the Wiedemann--Franz electronic contribution:
+\begin{equation}
+  \kappa_e = L_0\,\sigma_e\,T_H
+  \label{eq:WF}
+\end{equation}
+where $L_0 = 2.44\times10^{-8}$\,W\,$\Omega$\,K$^{-2}$ is the Lorenz number
+and $\sigma_e$ is the electrical conductivity of liquid cesium
+($\sigma_e \approx 1.5\times10^6$\,S\,m$^{-1}$ at 944\,K), giving
+$\kappa_e \approx 17$--$19$\,W\,m$^{-1}$\,K$^{-1}$.
+
+The total electronic heat leak from an array of $N$ tubes scales as:
+\begin{equation}
+  \dot{Q}_e^{\mathrm{array}} = N \cdot \kappa_e \cdot A_{\mathrm{int}} \cdot
+  \frac{\Delta T}{w}
+  \label{eq:elec_scaling}
+\end{equation}
+where $A_{\mathrm{int}}$ is the Cs--wall interfacial contact area per tube,
+$\Delta T = T_H - T_C = 844$\,K, and $w$ is the wall thickness. The PnC
+contribution suppresses the phononic minority ($\kappa_{\mathrm{ph}} \approx
+1$--$2$\,W\,m$^{-1}$\,K$^{-1}$) while leaving $\kappa_e$ unaffected. The
+ratio of electronic to total conductivity is:
+\begin{equation}
+  \frac{\kappa_e}{\kappa_e + \kappa_{\mathrm{ph}}} \approx \frac{18}{19} \approx 0.95
+\end{equation}
+PnC walls therefore address at most 5\% of the total thermal conductance at
+the Cs--wall interface. This fraction does not improve with $N$.
+
+\subsection*{10.3 Critical array size}
+
+Define the \textbf{cross-radiation loading factor} $\Lambda$ as the ratio of
+power absorbed by an interior tube from its neighbours to its own internally
+generated power:
+\begin{equation}
+  \Lambda = \frac{\dot{q}_{\mathrm{cross}} \cdot l}{P_{\mathrm{tube}}}
+  = \frac{n_{\mathrm{nbr}}\,F\,\varepsilon_{\mathrm{outer}}\,\sigma T_H^4
+          \cdot 2\pi r_o\,l}{P_{\mathrm{tube}}}
+  \label{eq:Lambda}
+\end{equation}
+where $l$ is the tube length and $n_{\mathrm{nbr}}$ is the number of nearest
+neighbours. When $\Lambda \geq 1$, an interior tube absorbs as much energy
+from its neighbours as it generates internally — the array enters a
+thermally coupled regime in which each tube's operating point depends on all
+others. This is the critical array size beyond which per-tube performance
+degrades.
+
+For $r_o = 0.05$\,m, $l = 2$\,m, $n_{\mathrm{nbr}} = 6$, $F = 0.3$,
+$\varepsilon_{\mathrm{outer}} = 0.8$ (uncoated metal), $T_H = 944$\,K, and
+$P_{\mathrm{tube}} = 100$\,kW:
+\[
+  \dot{q}_{\mathrm{cross}} \approx 6 \times 0.3 \times 0.8 \times
+  5.67\!\times\!10^{-8} \times 944^4 \times 2\pi\,(0.05)\,(2)
+  \approx 38\,\mathrm{kW}
+\]
+\[
+  \Lambda \approx \frac{38}{100} = 0.38
+\]
+This is well below unity for 100\,kW tubes — but at $P_{\mathrm{tube}} =
+10$\,kW, $\Lambda \approx 3.8$, meaning each interior tube absorbs nearly
+four times its own power from neighbours. Smaller tubes in denser arrays
+cross the critical threshold rapidly.
+
+\subsection*{10.4 Mitigation strategies in priority order}
+
+Three strategies address the new dissipation channels, ranked by their
+leverage.
+
+\paragraph{Priority 1: Selective outer-surface emissivity.}
+The cross-radiation channel scales directly with $\varepsilon_{\mathrm{outer}}$.
+Replacing $\varepsilon_{\mathrm{outer}} = 0.8$ (oxidised metal) with a
+low-emissivity coating on the inter-tube faces reduces $\dot{q}_{\mathrm{cross}}$
+proportionally. Polished refractory metals (W, Mo) achieve
+$\varepsilon \approx 0.03$--$0.08$ in the near-infrared at 944\,K:
+\[
+  \dot{q}_{\mathrm{cross}}^{\mathrm{coated}} \approx 0.05 \times
+  \dot{q}_{\mathrm{cross}}^{\mathrm{bare}} \quad\Rightarrow\quad
+  \Lambda_{\mathrm{coated}} \approx 0.019
+\]
+This is the highest-leverage single intervention and it has no mass penalty
+relative to PnC fabrication.
+
+\paragraph{Priority 2: Geometric shielding.}
+Thin radiation shields (multi-layer insulation geometry) inserted in the
+inter-tube gaps reduce the effective view factor:
+\begin{equation}
+  F_{ij}^{\mathrm{shielded}} = \frac{F_{ij}}{1 + (n_s)(1-\varepsilon_s)/\varepsilon_s}
+\end{equation}
+where $n_s$ is the number of shield layers and $\varepsilon_s$ is their
+emissivity. Two layers of polished molybdenum foil ($\varepsilon_s = 0.05$)
+reduce the effective view factor by a factor of $\sim 40$.
+
+\paragraph{Priority 3: Electronic conductance engineering at the interface.}
+Suppressing $\kappa_e$ at the Cs--wall boundary requires either a wall material
+with a large Lorenz-number mismatch relative to cesium, or a thin electrically
+resistive interlayer that creates an effective electronic Kapitza resistance.
+Candidate interlayer materials are oxides or nitrides with low electronic
+conductivity but compatible thermal expansion coefficients with the PnC
+substrate. This is less developed than PnC fabrication and is recommended
+for later-stage development once the radiative cross-coupling is resolved.
+
+\subsection*{10.5 Revised efficiency multiplier for array systems}
+
+The efficiency multiplier $\chi$ from the PnC paper must be augmented with
+an array cross-radiation penalty term:
+\begin{equation}
+  \chi_{\mathrm{array}} = \chi_{\mathrm{single}} \cdot
+  \frac{1}{1 + \Lambda(\varepsilon_{\mathrm{outer}}, r_o, l, n_{\mathrm{nbr}})}
+  \label{eq:chi_array}
+\end{equation}
+where $\chi_{\mathrm{single}}$ is given by Eq.~(3) of the PnC paper and
+$\Lambda$ is defined by Eq.~(\ref{eq:Lambda}). For a well-coated array
+($\varepsilon_{\mathrm{outer}} = 0.05$) and moderate tube power
+($P_{\mathrm{tube}} \geq 100$\,kW):
+\[
+  \Lambda \approx 0.019 \quad\Rightarrow\quad
+  \chi_{\mathrm{array}} \approx 0.98\,\chi_{\mathrm{single}}
+\]
+The array penalty is negligible when the outer surface emissivity is properly
+managed. Without surface treatment ($\varepsilon_{\mathrm{outer}} = 0.8$),
+$\chi_{\mathrm{array}}$ degrades to $0.72\,\chi_{\mathrm{single}}$ for the
+100\,kW case, and below $0.20\,\chi_{\mathrm{single}}$ for 10\,kW tubes.
+
+\subsection*{10.6 Summary: thermal management priority stack}
+
+\begin{center}
+\begin{tabular}{llll}
+\toprule
+\textbf{Priority} & \textbf{Channel} & \textbf{Intervention} & \textbf{Leverage} \\
+\midrule
+1 & Cross-radiation     & Low-$\varepsilon$ outer coating  & $20\times$ reduction in $\Lambda$ \\
+2 & Cross-radiation     & Inter-tube radiation shields      & $40\times$ reduction in $F_{ij}$ \\
+3 & Electronic conduction & Resistive interlayer at Cs--wall & Suppresses $\kappa_e$ \\
+4 & Phononic conduction  & PnC wall engineering              & Suppresses $\kappa_{\mathrm{ph}}$ only \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent
+PnC walls remain worthwhile — they address a real loss channel and add
+structural function as a high-$Q$ acoustic cavity relevant to the population
+inversion question in Section~9. However, in a parallelised array, outer-surface
+emissivity management must be treated as the primary thermal design variable.
+A PnC wall with a high-emissivity outer surface is substantially less effective
+than a plain metal wall with a low-emissivity outer coating.
+
+\end{document}
+
+
+
